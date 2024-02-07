@@ -1,0 +1,46 @@
+// https://pris.ly/d/prisma-schema
+
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-1.1.x", "linux-musl"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                    String                 @id
+  email                 String                 @unique
+  hashedPassword        String
+  emailVerified         Boolean                @default(false)
+  sessions              Session[]
+  emailVerificationCode EmailVerificationCode?
+  createdAt             DateTime               @default(now())
+  updatedAt             DateTime               @default(now()) @updatedAt()
+  passwordResetToken    PasswordResetToken?
+}
+
+model Session {
+  id        String   @id
+  userId    String
+  expiresAt DateTime
+  user      User     @relation(references: [id], fields: [userId], onDelete: Cascade)
+}
+
+model EmailVerificationCode {
+  id        Int      @id @default(autoincrement())
+  code      String
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id])
+  email     String
+  expiresAt DateTime
+}
+
+model PasswordResetToken {
+  id        String   @id
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id])
+  expiresAt DateTime
+}
