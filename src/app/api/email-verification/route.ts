@@ -26,14 +26,14 @@ export async function POST(req: NextRequest) {
   }
 
   if (typeof code !== "string") {
-    return new NextResponse(null, {
+    return new NextResponse("Invalid code", {
       status: 400,
     });
   }
 
   const validCode = await verifyVerificationCode(user, code);
   if (!validCode) {
-    return new NextResponse(null, {
+    return new NextResponse("Invalid code", {
       status: 400,
     });
   }
@@ -69,13 +69,16 @@ async function verifyVerificationCode(
     },
   });
   if (!databaseCode || databaseCode.code !== code) return false;
-  // delete here ?
   if (!isWithinExpirationDate(databaseCode.expiresAt)) {
+    console.log("expired");
     return false;
   }
+  console.log("not expired");
   if (databaseCode.email !== user.email) {
+    console.log("email mismatch");
     return false;
   }
+  console.log("email match");
   await prisma.emailVerificationCode.delete({
     where: {
       id: databaseCode.id,

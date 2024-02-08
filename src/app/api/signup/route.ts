@@ -11,7 +11,12 @@ import argon2 from "argon2";
 
 export async function POST(request: Request) {
   try {
-    const { email, password } = await request.json();
+    const { email, password, username } = await request.json();
+    if (!username || typeof username !== "string" || username.length < 3) {
+      return new NextResponse("Invalid username", {
+        status: 400,
+      });
+    }
     if (!email || typeof email !== "string" || !isValidEmail(email)) {
       return new NextResponse("Invalid email", {
         status: 400,
@@ -30,6 +35,7 @@ export async function POST(request: Request) {
       await prisma.user.create({
         data: {
           id: userId,
+          username,
           email,
           hashedPassword: hashedPassword,
         },
@@ -50,7 +56,7 @@ export async function POST(request: Request) {
           "Set-Cookie": sessionCookie.serialize(),
         },
       });
-    } catch {
+    } catch (e) {
       // db error, email taken, etc
       return new NextResponse("Email already used", {
         status: 400,

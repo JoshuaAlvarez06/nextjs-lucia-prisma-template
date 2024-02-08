@@ -16,14 +16,17 @@ export default async function VerifyEmailPage() {
 
   return (
     <div>
-      <div className="fixed inset-0 bg-gray-200" aria-hidden="true" />
+      <div className="fixed inset-0 bg-accent" aria-hidden="true" />
       <div className="fixed inset-0 flex flex-col gap-2 w-screen items-center justify-center p-4">
         <Link href="/">
-          <Logo color="#000" width="80px" />
+          <Logo
+            className="text-accent-foreground fill-accent-foreground"
+            width="80px"
+          />
         </Link>
         <div
           className={classNames(
-            "mx-auto w-screen max-w-md rounded bg-white p-5 space-y-2 border-gray-200"
+            "mx-auto w-screen max-w-md rounded bg-background text-foreground p-5 space-y-2 border-gray-200"
           )}
         >
           <h2 className="pt-3 font-bold text-3xl text-center">Verify Email</h2>

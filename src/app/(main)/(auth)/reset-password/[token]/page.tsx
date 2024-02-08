@@ -23,7 +23,7 @@ export default async function ResetPasswordPage() {
         </Link>
         <div
           className={classNames(
-            "mx-auto w-screen max-w-md rounded bg-white p-5 space-y-2 border-gray-200"
+            "mx-auto w-screen max-w-md rounded bg-background text-foreground p-5 space-y-2 border-gray-200"
           )}
         >
           <h2 className="pt-3 font-bold text-3xl text-center">

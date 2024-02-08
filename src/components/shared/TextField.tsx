@@ -1,11 +1,9 @@
 import { classNames } from "@/utils/classNames";
 import React from "react";
+import { Input, InputProps } from "@/components/ui";
 
 // extend input element with some styles and props
-export type TextFieldProps = React.DetailedHTMLProps<
-  React.InputHTMLAttributes<HTMLInputElement>,
-  HTMLInputElement
-> & {
+export type TextFieldProps = InputProps & {
   label?: string;
   containerClassName?: string;
   labelClassName?: string;
@@ -24,7 +22,7 @@ export function TextField({
       <label htmlFor={props.id} className={classNames(labelClassName)}>
         {label}
       </label>
-      <input
+      <Input
         className={classNames(inputClassName)}
         {...props}
         type={props.type || "text"}

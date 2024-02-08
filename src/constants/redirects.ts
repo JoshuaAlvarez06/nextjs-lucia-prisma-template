@@ -1,8 +1,8 @@
 export const redirects = {
   toLogin: "/login",
   toSignup: "/login",
-  afterLogin: "/dashboard",
+  afterLogin: "/home",
   afterLogout: "/",
   toVerify: "/verify-email",
-  afterVerify: "/dashboard",
+  afterVerify: "/home",
 } as const;

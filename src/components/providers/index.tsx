@@ -9,6 +9,7 @@ import {
 import { Session, User } from "lucia";
 import dynamic from "next/dynamic";
 import { createContext } from "react";
+import { ThemeProvider } from "next-themes";
 
 const ToastContainer = dynamic(
   () => import("react-toastify").then((module) => module.ToastContainer),
@@ -41,25 +42,32 @@ export function Providers({
     <QueryClientProvider client={client}>
       <HydrationBoundary state={dehydratedState}>
         <>
-          <AuthContext.Provider
-            value={{ state: sessionData, dispatch: () => null }}
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
           >
-            <ToastContainer
-              position="top-right"
-              autoClose={5000}
-              hideProgressBar={false}
-              newestOnTop={true}
-              closeOnClick={false}
-              rtl={false}
-              pauseOnFocusLoss
-              draggable
-              pauseOnHover
-              theme="light"
-              className="text-sm"
-            />
+            <AuthContext.Provider
+              value={{ state: sessionData, dispatch: () => null }}
+            >
+              <ToastContainer
+                position="top-right"
+                autoClose={5000}
+                hideProgressBar={false}
+                newestOnTop={true}
+                closeOnClick={false}
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="light"
+                className="text-sm"
+              />
 
-            {children}
-          </AuthContext.Provider>
+              {children}
+            </AuthContext.Provider>
+          </ThemeProvider>
         </>
       </HydrationBoundary>
     </QueryClientProvider>

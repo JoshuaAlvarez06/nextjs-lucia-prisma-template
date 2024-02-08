@@ -4,6 +4,7 @@ import "./globals.css";
 import { Providers } from "@/components";
 import { validateRequest } from "@/server";
 import { APP_NAME } from "@/constants/branding";
+import "@radix-ui/themes/styles.css";
 
 const inter = Inter({ subsets: ["latin"] });
 

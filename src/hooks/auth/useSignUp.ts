@@ -13,6 +13,7 @@ export function useSignUp(params?: {
     Response,
     unknown,
     {
+      username: string;
       email: string;
       password: string;
     }
@@ -25,7 +26,7 @@ export function useSignUp(params?: {
           "Content-Type": "application/json",
         },
       });
-      if (!response.ok) throw new Error("Somethign went wrong");
+      if (!response.ok) throw new Error("Something went wrong");
       return response;
     },
     onSuccess,

@@ -52,7 +52,6 @@ export function VerifyCode() {
         <TextField
           containerClassName="space-y-1"
           labelClassName="text-sm font-medium"
-          inputClassName="text-sm w-full rounded p-2 border-[1px] border-gray-200 focus:outline-none focus:ring-1 focus:ring-brand-500 focus:border-brand-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
           label="Verification Code"
           id="verification-code"
           type="text"

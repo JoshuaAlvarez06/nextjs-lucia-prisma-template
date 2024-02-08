@@ -35,11 +35,11 @@ export function NavBar() {
           )}
           {!!user && (
             <Link
-              href="/dashboard"
+              href="/home"
               className="rounded-full px-4 py-2 text-medium text-white font-semibold bg-brand-500 hover:opacity-70 flex items-center gap-1.5"
             >
               <LuLayoutDashboard color="#fff" />
-              <span className="inline-flex items-center">Dashboard</span>
+              <span className="inline-flex items-center">Feed</span>
             </Link>
           )}
         </div>

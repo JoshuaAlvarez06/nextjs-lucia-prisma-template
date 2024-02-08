@@ -8,7 +8,7 @@ import { toast } from "react-toastify";
 import Link from "next/link";
 import { useSignUp } from "@/hooks";
 import { useRouter } from "next/navigation";
-import { classNames } from "@/utils";
+import { classNames, isValidEmail } from "@/utils";
 import { redirects } from "@/constants";
 import { APP_NAME } from "@/constants/branding";
 
@@ -19,11 +19,17 @@ export type AuthModalProps = {
 };
 
 type Action = "login" | "signup" | "forgot-password";
+type Form = {
+  username: string;
+  email: string;
+  password: string;
+};
 
 export function AuthForm({ isOpen, onClose, isPage }: AuthModalProps) {
   const router = useRouter();
   const [action, setAction] = useState<Action>("login");
-  const [form, setForm] = useState({
+  const [form, setForm] = useState<Form>({
+    username: "",
     email: "",
     password: "",
   });
@@ -54,7 +60,13 @@ export function AuthForm({ isOpen, onClose, isPage }: AuthModalProps) {
     e.preventDefault();
     if (isPending) return;
     try {
-      (action === "login" ? loginMutate : signUpMutate)(form);
+      const error = validateForm(action, form);
+      if (error) {
+        toast.error(error);
+        return;
+      }
+      if (action === "login") loginMutate(form);
+      else signUpMutate(form);
     } catch (e) {}
   };
 
@@ -68,10 +80,10 @@ export function AuthForm({ isOpen, onClose, isPage }: AuthModalProps) {
 
   const close = () => {
     if (isPending || isPage) return;
-    setForm({ email: "", password: "" });
+    setForm({ email: "", password: "", username: "" });
     onClose?.();
   };
-
+  console.log(validateForm(action, form));
   return (
     <Transition.Root show={isOpen} as={Fragment}>
       <Dialog onClose={close} className="relative z-50">
@@ -89,13 +101,16 @@ export function AuthForm({ isOpen, onClose, isPage }: AuthModalProps) {
           </Transition.Child>
         )}
         {isPage && (
-          <div className="fixed inset-0 bg-gray-200" aria-hidden="true" />
+          <div className="fixed inset-0 bg-accent" aria-hidden="true" />
         )}
         <div className="fixed inset-0 flex flex-col gap-2 w-screen items-center justify-center p-4">
           {isPage && (
             <>
               <div>
-                <Logo color="#000" width="80px" />
+                <Logo
+                  className="text-accent-foreground fill-accent-foreground"
+                  width="80px"
+                />
               </div>
             </>
           )}
@@ -110,7 +125,7 @@ export function AuthForm({ isOpen, onClose, isPage }: AuthModalProps) {
           >
             <Dialog.Panel
               className={classNames(
-                "mx-auto w-screen max-w-sm sm:max-w-md md:max-w-lg rounded-md bg-white p-5 space-y-2",
+                "mx-auto w-screen max-w-sm sm:max-w-md md:max-w-lg rounded-md bg-background p-5 space-y-2 text-foreground",
                 isPage ? "border-gray-200" : ""
               )}
             >
@@ -124,10 +139,24 @@ export function AuthForm({ isOpen, onClose, isPage }: AuthModalProps) {
                     action === "forgot-password" ? onForgotPassword : onAuth
                   }
                 >
+                  {action === "signup" && (
+                    <TextField
+                      containerClassName="space-y-1"
+                      labelClassName="text-sm font-medium"
+                      label="Username"
+                      id="username"
+                      type="text"
+                      value={form.username}
+                      onChange={(e) =>
+                        setForm((c) => ({ ...c, username: e.target.value }))
+                      }
+                      autoComplete="username"
+                      disabled={isPending}
+                    />
+                  )}
                   <TextField
                     containerClassName="space-y-1"
                     labelClassName="text-sm font-medium"
-                    inputClassName="text-sm w-full rounded p-2 border-[1px] border-gray-200 focus:outline-none focus:ring-1 focus:ring-brand-500 focus:border-brand-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
                     label="Email"
                     id="email"
                     type="email"
@@ -143,7 +172,6 @@ export function AuthForm({ isOpen, onClose, isPage }: AuthModalProps) {
                     <TextField
                       containerClassName="space-y-1"
                       labelClassName="text-sm font-medium"
-                      inputClassName="text-sm w-full rounded p-2 border-[1px] border-gray-200 focus:outline-none focus:ring-1 focus:ring-brand-500 focus:border-brand-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
                       label="Password"
                       id="password"
                       type="password"
@@ -160,7 +188,7 @@ export function AuthForm({ isOpen, onClose, isPage }: AuthModalProps) {
                     <button
                       type="submit"
                       className="w-full rounded-lg py-2 text-white font-semibold bg-brand-500 hover:opacity-70 disabled:opacity-70 disabled:cursor-not-allowed"
-                      disabled={isPending}
+                      disabled={isPending || !!validateForm(action, form)}
                     >
                       {getButtonText(action)}
                     </button>
@@ -262,4 +290,14 @@ const getFooterActionText = (action: Action) => {
     case "forgot-password":
       return "Remember your password?";
   }
+};
+
+const validateForm = (action: Action, form: Form): string | null => {
+  if (!form.email || !isValidEmail(form.email)) return "Invalid email";
+  if (isAuth(action)) {
+    if (!form.password || form.password.length < 8) return "Invalid password";
+    if (action === "signup" && (!form.username || form.username.length < 3))
+      return "Invalid username";
+  }
+  return null;
 };
